@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -108,6 +106,12 @@ fun ArtistAppScreen() {
                     artist = artist,
                     onDelete = { artistList.remove(artist) }
                 )
+                Button(
+                    onClick = {
+                        artistList.remove( artist)
+                    }
+                ) { Text("Delete")}
+
             }
         }
     }
@@ -136,13 +140,6 @@ fun ArtistRow(
                 Text(
                     text = "${artist.genre} - ${artist.yearFormed}",
                     style = MaterialTheme.typography.bodyMedium
-                )
-            }
-            // Delete button
-            IconButton(onClick = onDelete) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete"
                 )
             }
         }
