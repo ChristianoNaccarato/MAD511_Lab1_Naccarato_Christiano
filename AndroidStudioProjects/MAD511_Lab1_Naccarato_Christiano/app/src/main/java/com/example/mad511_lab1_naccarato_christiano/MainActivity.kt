@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -87,6 +89,36 @@ fun ArtistAppScreen() {
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Add")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // The artist list display using LazyColumn
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(artistList) { artist ->
+                ArtistRow(artist = artist)
+            }
+        }
+    }
+}
+
+@Composable
+fun ArtistRow(artist: Artist) {
+    Card(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = artist.name,
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                text = "${artist.genre} - ${artist.yearFormed}",
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
     }
 }
