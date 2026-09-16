@@ -4,12 +4,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlin.collections.remove
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,26 +104,47 @@ fun ArtistAppScreen() {
             modifier = Modifier.fillMaxSize()
         ) {
             items(artistList) { artist ->
-                ArtistRow(artist = artist)
+                ArtistRow(
+                    artist = artist,
+                    onDelete = { artistList.remove(artist) }
+                )
             }
         }
     }
 }
 
 @Composable
-fun ArtistRow(artist: Artist) {
+fun ArtistRow(
+    artist: Artist,
+    onDelete: () -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = artist.name,
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = "${artist.genre} - ${artist.yearFormed}",
-                style = MaterialTheme.typography.bodyMedium
-            )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = artist.name,
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = "${artist.genre} - ${artist.yearFormed}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+            // Delete button
+            IconButton(onClick = onDelete) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete"
+                )
+            }
         }
     }
 }

@@ -6,7 +6,7 @@ plugins {
 android {
     namespace = "com.example.mad511_lab1_naccarato_christiano"
     compileSdk {
-        version = release(36) {
+        version = release(37) {
             minorApiLevel = 1
         }
     }
