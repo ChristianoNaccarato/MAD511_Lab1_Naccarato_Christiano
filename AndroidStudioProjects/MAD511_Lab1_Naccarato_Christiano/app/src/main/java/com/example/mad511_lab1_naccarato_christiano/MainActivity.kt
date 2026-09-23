@@ -105,6 +105,12 @@ fun ArtistStatelessContent(
     onDeleteArtist: (Artist) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val isNameError = nameInput.isNotEmpty() && nameInput.isBlank()
+    val isGenreError = genreInput.isNotEmpty() && genreInput.isBlank()
+
+    val yearInt = yearInput.toIntOrNull()
+    val isYearError = yearInput.isNotEmpty() && (yearInt == null || yearInt !in 1900..2026)
+
     Scaffold(
         modifier = modifier
     ) { innerPadding ->
@@ -115,31 +121,47 @@ fun ArtistStatelessContent(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            // Name Input
             OutlinedTextField(
                 value = nameInput,
                 onValueChange = onNameChange,
                 label = { Text("Artist Name") },
+                isError = isNameError,
+                supportingText = {
+                    if (isNameError) Text("Name cannot be blank")
+                },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
 
+            // Genre Input
             OutlinedTextField(
                 value = genreInput,
                 onValueChange = onGenreChange,
                 label = { Text("Genre") },
+                isError = isGenreError,
+                supportingText = {
+                    if (isGenreError) Text("Genre cannot be blank")
+                },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
 
+            // Year Input
             OutlinedTextField(
                 value = yearInput,
                 onValueChange = onYearChange,
                 label = { Text("Year Formed") },
+                isError = isYearError,
+                supportingText = {
+                    if (isYearError) Text("Enter a year between 1900 and 2026")
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), // Uses the number keyboard
                 modifier = Modifier.fillMaxWidth()
             )
 
+            // Add Button
             Button(
                 onClick = onAddArtist,
                 modifier = Modifier.fillMaxWidth()
