@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -102,59 +103,59 @@ fun ArtistStatelessContent(
     onDeleteArtist: (Artist) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
+    Scaffold(
         modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        // Form Inputs
-        OutlinedTextField(
-            value = nameInput,
-            onValueChange = onNameChange,
-            label = { Text("Artist Name") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = genreInput,
-            onValueChange = onGenreChange,
-            label = { Text("Genre") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = yearInput,
-            onValueChange = onYearChange,
-            label = { Text("Year Formed") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Add Button
-        Button(
-            onClick = onAddArtist,
-            modifier = Modifier.fillMaxWidth()
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text("Add")
-        }
+            OutlinedTextField(
+                value = nameInput,
+                onValueChange = onNameChange,
+                label = { Text("Artist Name") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            OutlinedTextField(
+                value = genreInput,
+                onValueChange = onGenreChange,
+                label = { Text("Genre") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        // LazyColumn displaying artist cards with row deletion
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(artistList) { artist ->
-                ArtistRow(
-                    artist = artist,
-                    onDelete = { onDeleteArtist(artist) }
-                )
+            OutlinedTextField(
+                value = yearInput,
+                onValueChange = onYearChange,
+                label = { Text("Year Formed") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Button(
+                onClick = onAddArtist,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Add Artist")
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(artistList) { artist ->
+                    ArtistRow(
+                        artist = artist,
+                        onDelete = { onDeleteArtist(artist) }
+                    )
+                }
             }
         }
     }
