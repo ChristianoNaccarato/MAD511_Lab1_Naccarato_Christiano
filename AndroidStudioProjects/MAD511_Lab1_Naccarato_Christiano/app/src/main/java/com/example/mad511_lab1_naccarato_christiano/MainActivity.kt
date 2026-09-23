@@ -3,6 +3,7 @@ package com.example.mad511_lab1_naccarato_christiano
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -184,21 +185,38 @@ fun ArtistStatelessContent(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(artistList) { artist ->
-                    ArtistRow(
-                        artist = artist,
-                        onDelete = { onDeleteArtist(artist) }
+            if (artistList.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(24.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "No artists added yet",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                }
+            } else {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(
+                        items = artistList,
+                        key = { artist -> "${artist.name}_${artist.yearFormed}" }
+                    ) { artist ->
+                        ArtistRow(
+                            artist = artist,
+                            onDelete = { onDeleteArtist(artist) }
+                        )
+                    }
                 }
             }
         }
     }
 }
-
 @Composable
 fun ArtistRow(
     artist: Artist,
