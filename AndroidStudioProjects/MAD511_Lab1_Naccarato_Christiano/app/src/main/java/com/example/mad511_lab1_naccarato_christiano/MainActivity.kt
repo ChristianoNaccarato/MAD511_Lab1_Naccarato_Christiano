@@ -32,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.runtime.derivedStateOf
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,6 +61,15 @@ fun ArtistAppScreen(
 
     val artistList = remember { mutableStateListOf<Artist>() }
 
+    val isFormValid by remember {
+        derivedStateOf {
+            val year = yearInput.toIntOrNull()
+            nameInput.isNotBlank() &&
+                    genreInput.isNotBlank() &&
+                    year != null && year in 1900..2026
+        }
+    }
+
     ArtistStatelessContent(
         nameInput = nameInput,
         onNameChange = { nameInput = it },
@@ -67,6 +77,7 @@ fun ArtistAppScreen(
         onGenreChange = { genreInput = it },
         yearInput = yearInput,
         onYearChange = { yearInput = it },
+        isFormValid = isFormValid,
         artistList = artistList,
         onAddArtist = {
             val year = yearInput.toIntOrNull()
@@ -100,6 +111,7 @@ fun ArtistStatelessContent(
     onGenreChange: (String) -> Unit,
     yearInput: String,
     onYearChange: (String) -> Unit,
+    isFormValid: Boolean,
     artistList: List<Artist>,
     onAddArtist: () -> Unit,
     onDeleteArtist: (Artist) -> Unit,
@@ -164,6 +176,7 @@ fun ArtistStatelessContent(
             // Add Button
             Button(
                 onClick = onAddArtist,
+                enabled = isFormValid,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Add Artist")
@@ -229,6 +242,7 @@ fun ArtistStatelessContentPreview() {
             onGenreChange = {},
             yearInput = "2006",
             onYearChange = {},
+            isFormValid = true,
             artistList = listOf(
                 Artist(
                     name = "Drake",
