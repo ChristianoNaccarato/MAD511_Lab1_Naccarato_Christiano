@@ -7,7 +7,7 @@ import com.example.mad511_lab1_naccarato_christiano.data.ArtistRepository
 
 class ArtistViewModel : ViewModel() {
 
-    private val repository = ArtistRepository()
+    private val repository = ArtistRepository.getInstance()
 
     val artistList = mutableStateListOf<Artist>()
 
@@ -15,7 +15,7 @@ class ArtistViewModel : ViewModel() {
         refreshList()
     }
 
-    private fun refreshList() {
+    fun refreshList() {
         artistList.clear()
         artistList.addAll(repository.getArtists())
     }

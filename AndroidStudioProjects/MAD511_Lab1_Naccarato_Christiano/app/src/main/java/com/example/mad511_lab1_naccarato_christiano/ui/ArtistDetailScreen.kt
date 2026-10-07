@@ -1,9 +1,25 @@
-package com.example.mad511_lab1_naccarato_christiano
+package com.example.mad511_lab1_naccarato_christiano.ui
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -90,7 +106,7 @@ fun ArtistDetailScreen(
 fun ArtistDetailScreenPreview() {
     ArtistDetailScreen(
         state = ArtistDetailUiState.Success(
-            artist = Artist(id = 1, name = "The Beatles", genre = "Rock", yearFormed = 1960)
+            artist = Artist(id = 1, name = "Drake", genre = "Hip-Hop", yearFormed = 2006)
         ),
         onBack = {},
         onDeleteClick = {}

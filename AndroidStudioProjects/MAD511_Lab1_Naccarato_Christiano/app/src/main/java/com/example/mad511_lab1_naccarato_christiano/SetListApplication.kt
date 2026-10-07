@@ -1,18 +1,10 @@
 package com.example.mad511_lab1_naccarato_christiano
 
 import android.app.Application
-
-class AppContainer {
-    val artistRepository: ArtistRepository by lazy {
-        InMemoryArtistRepository()
-    }
-}
+import com.example.mad511_lab1_naccarato_christiano.data.ArtistRepository
 
 class SetListApplication : Application() {
-    lateinit var container: AppContainer
-
-    override fun onCreate() {
-        super.onCreate()
-        container = AppContainer()
+    val repository: ArtistRepository by lazy {
+        ArtistRepository.getInstance()
     }
 }

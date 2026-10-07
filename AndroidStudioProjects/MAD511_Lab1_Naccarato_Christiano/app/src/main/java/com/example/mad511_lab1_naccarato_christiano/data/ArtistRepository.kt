@@ -1,6 +1,7 @@
 package com.example.mad511_lab1_naccarato_christiano.data
 
-class ArtistRepository {
+class ArtistRepository private constructor() {
+
     private val dataSource = DataSource()
 
     fun getArtists(): List<Artist> {
@@ -13,5 +14,18 @@ class ArtistRepository {
 
     fun deleteArtist(artist: Artist) {
         dataSource.deleteArtist(artist)
+    }
+
+    companion object {
+        @Volatile
+        private var INSTANCE: ArtistRepository? = null
+
+        fun getInstance(): ArtistRepository {
+            return INSTANCE ?: synchronized(this) {
+                val instance = ArtistRepository()
+                INSTANCE = instance
+                instance
+            }
+        }
     }
 }
