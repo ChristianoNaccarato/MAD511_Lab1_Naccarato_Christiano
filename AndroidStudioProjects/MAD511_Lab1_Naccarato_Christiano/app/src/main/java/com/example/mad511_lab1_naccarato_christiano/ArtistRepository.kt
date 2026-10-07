@@ -1,5 +1,6 @@
 package com.example.mad511_lab1_naccarato_christiano
 
+import com.example.mad511_lab1_naccarato_christiano.data.Artist
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

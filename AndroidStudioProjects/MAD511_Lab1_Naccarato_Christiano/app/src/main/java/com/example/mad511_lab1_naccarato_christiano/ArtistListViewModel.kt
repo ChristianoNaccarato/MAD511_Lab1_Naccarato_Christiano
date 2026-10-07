@@ -1,6 +1,7 @@
 package com.example.mad511_lab1_naccarato_christiano
 
 import androidx.lifecycle.ViewModel
+import com.example.mad511_lab1_naccarato_christiano.data.Artist
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

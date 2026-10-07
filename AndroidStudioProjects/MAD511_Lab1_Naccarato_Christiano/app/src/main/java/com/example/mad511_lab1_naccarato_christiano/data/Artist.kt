@@ -1,4 +1,4 @@
-package com.example.mad511_lab1_naccarato_christiano
+package com.example.mad511_lab1_naccarato_christiano.data
 
 data class Artist(
     val id: Int = 0,
