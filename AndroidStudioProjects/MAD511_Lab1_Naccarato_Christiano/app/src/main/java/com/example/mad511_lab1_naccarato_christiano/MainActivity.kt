@@ -9,9 +9,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mad511_lab1_naccarato_christiano.data.ArtistRepository
@@ -33,22 +35,37 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    var currentScreen by remember { mutableStateOf("list") }
-                    var selectedArtistId by remember { mutableIntStateOf(-1) }
+                    // 1. Back stack list that survives orientation/rotation changes
+                    val navBackStack = rememberSaveable(
+                        saver = listSaver(
+                            save = { it.toList() },
+                            restore = { it.toMutableStateList() }
+                        )
+                    ) {
+                        mutableStateListOf("list")
+                    }
 
-                    when (currentScreen) {
+                    // 2. Remember selected artist ID across rotation
+                    var selectedArtistId by rememberSaveable { mutableIntStateOf(-1) }
+
+                    // 3. Render current top of back stack
+                    when (navBackStack.lastOrNull() ?: "list") {
                         "list" -> ArtistListScreen(
                             viewModel = viewModel,
-                            onNavigateToAdd = { currentScreen = "add" },
+                            onNavigateToAdd = { navBackStack.add("add") },
                             onArtistClick = { id ->
                                 selectedArtistId = id
-                                currentScreen = "detail"
+                                navBackStack.add("detail")
                             }
                         )
 
                         "add" -> AddArtistScreen(
                             viewModel = viewModel,
-                            onNavigateBack = { currentScreen = "list" }
+                            onNavigateBack = {
+                                if (navBackStack.size > 1) {
+                                    navBackStack.removeAt(navBackStack.lastIndex)
+                                }
+                            }
                         )
 
                         "detail" -> {
@@ -62,14 +79,19 @@ class MainActivity : ComponentActivity() {
                                 viewModel = detailViewModel,
                                 onBack = {
                                     viewModel.refreshList()
-                                    currentScreen = "list"
+                                    if (navBackStack.size > 1) {
+                                        navBackStack.removeAt(navBackStack.lastIndex)
+                                    }
                                 },
                                 onDeleteClick = { id ->
                                     val artistToDelete = viewModel.artistList.find { it.id == id }
                                     if (artistToDelete != null) {
                                         viewModel.deleteArtist(artistToDelete)
                                     }
-                                    currentScreen = "list"
+                                    viewModel.refreshList()
+                                    if (navBackStack.size > 1) {
+                                        navBackStack.removeAt(navBackStack.lastIndex)
+                                    }
                                 }
                             )
                         }

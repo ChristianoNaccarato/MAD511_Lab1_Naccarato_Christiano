@@ -21,6 +21,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -33,9 +34,9 @@ fun AddArtistScreen(
     viewModel: ArtistViewModel,
     onNavigateBack: () -> Unit
 ) {
-    var nameInput by remember { mutableStateOf("") }
-    var genreInput by remember { mutableStateOf("") }
-    var yearInput by remember { mutableStateOf("") }
+    var nameInput by rememberSaveable { mutableStateOf("") }
+    var genreInput by rememberSaveable { mutableStateOf("") }
+    var yearInput by rememberSaveable { mutableStateOf("") }
 
     val yearInt = yearInput.toIntOrNull()
     val isFormValid = nameInput.isNotBlank() &&
