@@ -1,31 +1,12 @@
 package com.example.mad511_lab1_naccarato_christiano.data
 
-class ArtistRepository private constructor() {
+import kotlinx.coroutines.flow.Flow
 
-    private val dataSource = DataSource()
-
-    fun getArtists(): List<Artist> {
-        return dataSource.getArtists()
-    }
-
-    fun addArtist(name: String, genre: String, yearFormed: Int) {
-        dataSource.addArtist(name, genre, yearFormed)
-    }
-
-    fun deleteArtist(artist: Artist) {
-        dataSource.deleteArtist(artist)
-    }
-
-    companion object {
-        @Volatile
-        private var INSTANCE: ArtistRepository? = null
-
-        fun getInstance(): ArtistRepository {
-            return INSTANCE ?: synchronized(this) {
-                val instance = ArtistRepository()
-                INSTANCE = instance
-                instance
-            }
-        }
-    }
+interface ArtistRepository {
+    fun observeAll(): Flow<List<Artist>>
+    fun observeById(id: Int): Flow<Artist?>
+    fun search(query: String): Flow<List<Artist>>
+    suspend fun addArtist(artist: Artist)
+    suspend fun updateArtist(artist: Artist)
+    suspend fun deleteArtist(artist: Artist)
 }

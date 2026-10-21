@@ -3,7 +3,6 @@ package com.example.mad511_lab1_naccarato_christiano
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -15,27 +14,28 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.mad511_lab1_naccarato_christiano.data.ArtistRepository
 import com.example.mad511_lab1_naccarato_christiano.ui.AddArtistScreen
 import com.example.mad511_lab1_naccarato_christiano.ui.ArtistDetailRoute
 import com.example.mad511_lab1_naccarato_christiano.ui.ArtistDetailViewModel
 import com.example.mad511_lab1_naccarato_christiano.ui.ArtistListScreen
 import com.example.mad511_lab1_naccarato_christiano.ui.ArtistViewModel
+import com.example.mad511_lab1_naccarato_christiano.ui.ArtistViewModelFactory
 
 class MainActivity : ComponentActivity() {
 
-    private val viewModel: ArtistViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
+            val mainViewModel: ArtistViewModel = viewModel(factory = ArtistViewModelFactory)
+
             MaterialTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // 1. Back stack list that survives orientation/rotation changes
                     val navBackStack = rememberSaveable(
                         saver = listSaver(
                             save = { it.toList() },
@@ -45,13 +45,11 @@ class MainActivity : ComponentActivity() {
                         mutableStateListOf("list")
                     }
 
-                    // 2. Remember selected artist ID across rotation
                     var selectedArtistId by rememberSaveable { mutableIntStateOf(-1) }
 
-                    // 3. Render current top of back stack
                     when (navBackStack.lastOrNull() ?: "list") {
                         "list" -> ArtistListScreen(
-                            viewModel = viewModel,
+                            viewModel = mainViewModel,
                             onNavigateToAdd = { navBackStack.add("add") },
                             onArtistClick = { id ->
                                 selectedArtistId = id
@@ -60,7 +58,7 @@ class MainActivity : ComponentActivity() {
                         )
 
                         "add" -> AddArtistScreen(
-                            viewModel = viewModel,
+                            viewModel = mainViewModel,
                             onNavigateBack = {
                                 if (navBackStack.size > 1) {
                                     navBackStack.removeAt(navBackStack.lastIndex)
@@ -69,26 +67,25 @@ class MainActivity : ComponentActivity() {
                         )
 
                         "detail" -> {
-                            val repository = ArtistRepository.getInstance()
                             val detailViewModel: ArtistDetailViewModel = viewModel(
                                 key = selectedArtistId.toString(),
-                                factory = ArtistDetailViewModel.Factory(selectedArtistId, repository)
+                                factory = ArtistDetailViewModel.Factory(selectedArtistId)
                             )
+
+                            val artistList by mainViewModel.artistList.collectAsStateWithLifecycle()
 
                             ArtistDetailRoute(
                                 viewModel = detailViewModel,
                                 onBack = {
-                                    viewModel.refreshList()
                                     if (navBackStack.size > 1) {
                                         navBackStack.removeAt(navBackStack.lastIndex)
                                     }
                                 },
                                 onDeleteClick = { id ->
-                                    val artistToDelete = viewModel.artistList.find { it.id == id }
+                                    val artistToDelete = artistList.find { it.id == id }
                                     if (artistToDelete != null) {
-                                        viewModel.deleteArtist(artistToDelete)
+                                        mainViewModel.deleteArtist(artistToDelete)
                                     }
-                                    viewModel.refreshList()
                                     if (navBackStack.size > 1) {
                                         navBackStack.removeAt(navBackStack.lastIndex)
                                     }

@@ -1,31 +1,29 @@
 package com.example.mad511_lab1_naccarato_christiano.data
 
 import android.content.Context
-import androidx.room3.ColumnTypeConverters
 import androidx.room3.Database
 import androidx.room3.Room
 import androidx.room3.RoomDatabase
-import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import kotlinx.coroutines.Dispatchers
 
-
-@Database(entities = [ArtistEntity::class], version = 1, exportSchema = true)
-@ColumnTypeConverters(InstantConverter::class)
+@Database(entities = [ArtistEntity::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun ArtistDao(): ArtistDao
+
+    abstract fun artistDao(): ArtistDao
 
     companion object {
-        @Volatile private var INSTANCE: AppDatabase? = null
+        @Volatile
+        private var INSTANCE: AppDatabase? = null
 
-        fun get(context: Context): AppDatabase =
-            INSTANCE ?: synchronized(this) {
-                INSTANCE ?: build(context.applicationContext).also { INSTANCE = it }
+        fun getDatabase(context: Context): AppDatabase {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDatabase::class.java,
+                    "artist_database"
+                ).build()
+                INSTANCE = instance
+                instance
             }
-
-        private fun build(context: Context) =
-            Room.databaseBuilder<AppDatabase>(context, "Artists.db")
-                .setDriver(BundledSQLiteDriver())
-                .setQueryCoroutineContext(Dispatchers.IO)
-                .build()
+        }
     }
 }

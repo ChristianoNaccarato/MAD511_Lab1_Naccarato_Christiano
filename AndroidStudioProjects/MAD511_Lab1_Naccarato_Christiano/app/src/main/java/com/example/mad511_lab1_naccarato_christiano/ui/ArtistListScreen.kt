@@ -1,34 +1,36 @@
 package com.example.mad511_lab1_naccarato_christiano.ui
 
 import androidx.compose.foundation.clickable
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Card
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.mad511_lab1_naccarato_christiano.data.Artist
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,6 +40,9 @@ fun ArtistListScreen(
     onNavigateToAdd: () -> Unit,
     onArtistClick: (Int) -> Unit
 ) {
+    val searchResults by viewModel.searchResults.collectAsStateWithLifecycle()
+    val query by viewModel.query.collectAsStateWithLifecycle()
+
     Scaffold(
         topBar = {
             TopAppBar(title = { Text("Artist Collection") })
@@ -48,34 +53,47 @@ fun ArtistListScreen(
             }
         }
     ) { innerPadding ->
-        if (viewModel.artistList.isEmpty()) {
-            Box(
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            OutlinedTextField(
+                value = query,
+                onValueChange = viewModel::onQueryChange,
+                label = { Text("Search Artists") },
+                singleLine = true,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "No artists added yet",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(
-                    items = viewModel.artistList,
-                    key = { it.id }
-                ) { artist ->
-                    ArtistRow(
-                        artist = artist,
-                        onClick = { onArtistClick(artist.id) }
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+
+            if (searchResults.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = if (query.isBlank()) "No artists added yet" else "No matching artists found",
+                        style = MaterialTheme.typography.bodyLarge
                     )
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(
+                        items = searchResults,
+                        key = { it.id }
+                    ) { artist ->
+                        ArtistRow(
+                            artist = artist,
+                            onClick = { onArtistClick(artist.id) }
+                        )
+                    }
                 }
             }
         }
@@ -102,13 +120,14 @@ fun ArtistRow(
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = artist.name, style = MaterialTheme.typography.titleMedium)
                 Text(
-                    text = "${artist.genre} - ${artist.yearFormed}",
+                    text = "${artist.genre} • ${artist.yearFormed}",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
         }
     }
 }
+
 @Composable
 fun ArtistStatelessContent(
     nameInput: String,
@@ -181,7 +200,7 @@ fun ArtistStatelessContent(
                         Column(modifier = Modifier.weight(1f)) {
                             Text(text = artist.name, style = MaterialTheme.typography.titleMedium)
                             Text(
-                                text = "${artist.genre} - ${artist.yearFormed}",
+                                text = "${artist.genre} • ${artist.yearFormed}",
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
