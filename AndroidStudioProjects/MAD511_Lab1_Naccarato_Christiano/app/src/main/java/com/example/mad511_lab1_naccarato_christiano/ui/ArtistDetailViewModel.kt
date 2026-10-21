@@ -12,6 +12,7 @@ import com.example.mad511_lab1_naccarato_christiano.data.ArtistRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class ArtistDetailViewModel(
     private val artistId: Int,
@@ -24,6 +25,13 @@ class ArtistDetailViewModel(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = null
         )
+
+    fun toggleFavorite() {
+        val currentArtist = artist.value ?: return
+        viewModelScope.launch {
+            repository.updateArtist(currentArtist.copy(isFavorite = !currentArtist.isFavorite))
+        }
+    }
 
     companion object {
         fun Factory(artistId: Int): ViewModelProvider.Factory = viewModelFactory {

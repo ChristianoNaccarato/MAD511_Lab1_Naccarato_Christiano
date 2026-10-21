@@ -1,6 +1,5 @@
 package com.example.mad511_lab1_naccarato_christiano.ui
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -8,9 +7,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -32,7 +34,8 @@ import com.example.mad511_lab1_naccarato_christiano.data.Artist
 fun ArtistDetailScreen(
     artist: Artist?,
     onBack: () -> Unit,
-    onDeleteClick: (Int) -> Unit
+    onDeleteClick: (Int) -> Unit,
+    onToggleFavorite: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -48,6 +51,14 @@ fun ArtistDetailScreen(
                 },
                 actions = {
                     if (artist != null) {
+                        IconButton(onClick = onToggleFavorite) {
+                            Icon(
+                                imageVector = if (artist.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                contentDescription = if (artist.isFavorite) "Remove from favorites" else "Add to favorites",
+                                tint = if (artist.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+
                         IconButton(onClick = { onDeleteClick(artist.id) }) {
                             Icon(
                                 imageVector = Icons.Default.Delete,

@@ -10,12 +10,12 @@ fun ArtistDetailRoute(
     onBack: () -> Unit,
     onDeleteClick: (Int) -> Unit
 ) {
-
     val artist by viewModel.artist.collectAsStateWithLifecycle()
 
     ArtistDetailScreen(
         artist = artist,
         onBack = onBack,
-        onDeleteClick = onDeleteClick
+        onDeleteClick = onDeleteClick,
+        onToggleFavorite = { viewModel.toggleFavorite() }
     )
 }

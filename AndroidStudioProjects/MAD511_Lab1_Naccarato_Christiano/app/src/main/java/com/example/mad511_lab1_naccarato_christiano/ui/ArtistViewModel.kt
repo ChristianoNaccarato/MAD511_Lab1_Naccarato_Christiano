@@ -59,4 +59,10 @@ class ArtistViewModel(
             repository.deleteArtist(artist)
         }
     }
+
+    fun toggleFavorite(artist: Artist) {
+        viewModelScope.launch {
+            repository.updateArtist(artist.copy(isFavorite = !artist.isFavorite))
+        }
+    }
 }
