@@ -40,8 +40,7 @@ fun ArtistListScreen(
     onNavigateToAdd: () -> Unit,
     onArtistClick: (Int) -> Unit
 ) {
-    val searchResults by viewModel.searchResults.collectAsStateWithLifecycle()
-    val query by viewModel.query.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -59,7 +58,7 @@ fun ArtistListScreen(
                 .padding(innerPadding)
         ) {
             OutlinedTextField(
-                value = query,
+                value = uiState.searchQuery,
                 onValueChange = viewModel::onQueryChange,
                 label = { Text("Search Artists") },
                 singleLine = true,
@@ -68,13 +67,13 @@ fun ArtistListScreen(
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             )
 
-            if (searchResults.isEmpty()) {
+            if (uiState.artists.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = if (query.isBlank()) "No artists added yet" else "No matching artists found",
+                        text = if (!uiState.isSearching) "No artists added yet" else "No matching artists found",
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
@@ -86,7 +85,7 @@ fun ArtistListScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(
-                        items = searchResults,
+                        items = uiState.artists,
                         key = { it.id }
                     ) { artist ->
                         ArtistRow(
@@ -120,7 +119,7 @@ fun ArtistRow(
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = artist.name, style = MaterialTheme.typography.titleMedium)
                 Text(
-                    text = "${artist.genre} • ${artist.yearFormed}",
+                    text = "${artist.genre} \n${artist.yearFormed}",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -200,7 +199,7 @@ fun ArtistStatelessContent(
                         Column(modifier = Modifier.weight(1f)) {
                             Text(text = artist.name, style = MaterialTheme.typography.titleMedium)
                             Text(
-                                text = "${artist.genre} • ${artist.yearFormed}",
+                                text = "${artist.genre} \n${artist.yearFormed}",
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }

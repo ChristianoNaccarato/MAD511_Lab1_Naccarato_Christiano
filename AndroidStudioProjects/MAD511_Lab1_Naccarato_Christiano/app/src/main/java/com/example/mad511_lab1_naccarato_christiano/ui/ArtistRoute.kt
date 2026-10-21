@@ -7,7 +7,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 fun ArtistRoute(
     onNavigateToAdd: () -> Unit,
     onArtistClick: (Int) -> Unit,
-    viewModel: ArtistViewModel = viewModel(factory = ArtistViewModelFactory)
+    viewModel: ArtistViewModel = viewModel(factory = ArtistViewModelFactory.Factory)
 ) {
     ArtistListScreen(
         viewModel = viewModel,

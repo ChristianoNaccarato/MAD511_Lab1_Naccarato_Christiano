@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val mainViewModel: ArtistViewModel = viewModel(factory = ArtistViewModelFactory)
+            val mainViewModel: ArtistViewModel = viewModel(factory = ArtistViewModelFactory.Factory)
 
             MaterialTheme {
                 Surface(
@@ -72,7 +72,7 @@ class MainActivity : ComponentActivity() {
                                 factory = ArtistDetailViewModel.Factory(selectedArtistId)
                             )
 
-                            val artistList by mainViewModel.artistList.collectAsStateWithLifecycle()
+                            val uiState by mainViewModel.uiState.collectAsStateWithLifecycle()
 
                             ArtistDetailRoute(
                                 viewModel = detailViewModel,
@@ -82,7 +82,7 @@ class MainActivity : ComponentActivity() {
                                     }
                                 },
                                 onDeleteClick = { id ->
-                                    val artistToDelete = artistList.find { it.id == id }
+                                    val artistToDelete = uiState.artists.find { it.id == id }
                                     if (artistToDelete != null) {
                                         mainViewModel.deleteArtist(artistToDelete)
                                     }

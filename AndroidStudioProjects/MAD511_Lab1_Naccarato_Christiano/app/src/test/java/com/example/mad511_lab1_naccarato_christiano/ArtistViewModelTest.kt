@@ -73,8 +73,8 @@ class ArtistViewModelTest {
 
     @Test
     fun yearValidationRule_outOfRangeYearDisablesAddButton_andSensibleYearEnablesIt() {
-        var name = "Drake"
-        var genre = "Hip-Hop"
+        val name = "Drake"
+        val genre = "Hip-Hop"
         var yearInput = "-50"
 
         assertFalse(
@@ -93,7 +93,7 @@ class ArtistViewModelTest {
     @Test
     fun addArtist_updatesArtistListInViewModel() = runTest {
         backgroundScope.launch(testDispatcher) {
-            viewModel.artistList.collect()
+            viewModel.uiState.collect()
         }
 
         val testArtist = Artist(id = 1, name = "Drake", genre = "Hip-Hop", yearFormed = 2006)
@@ -101,7 +101,7 @@ class ArtistViewModelTest {
         viewModel.addArtist(testArtist)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        val list = viewModel.artistList.value
+        val list = viewModel.uiState.value.artists
         assertEquals(1, list.size)
         assertEquals("Drake", list[0].name)
     }
