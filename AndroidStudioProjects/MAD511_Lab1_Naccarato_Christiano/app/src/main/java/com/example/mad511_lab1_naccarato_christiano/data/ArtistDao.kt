@@ -17,8 +17,14 @@ interface ArtistDao {
     @Query("SELECT * FROM artists_room3 WHERE id = :id")
     fun observeById(id: Int): Flow<ArtistEntity?>
 
+    @Query("SELECT * FROM artists_room3 ORDER BY name ASC")
+    fun observeAllOrderedByName(): Flow<List<ArtistEntity>>
+
     @Query("SELECT * FROM artists_room3 WHERE name LIKE '%' || :query || '%' OR genre LIKE '%' || :query || '%'")
     fun search(query: String): Flow<List<ArtistEntity>>
+
+    @Query("SELECT * FROM artists_room3 WHERE name LIKE :prefix || '%' COLLATE NOCASE")
+    fun searchByPrefix(prefix: String): Flow<List<ArtistEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(artist: ArtistEntity)

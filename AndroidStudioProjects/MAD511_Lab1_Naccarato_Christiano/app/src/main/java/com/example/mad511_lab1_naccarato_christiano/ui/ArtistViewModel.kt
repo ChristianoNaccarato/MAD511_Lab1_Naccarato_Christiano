@@ -8,6 +8,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
@@ -23,19 +24,27 @@ class ArtistViewModel(
     private val _searchQuery = MutableStateFlow("")
 
     val uiState: StateFlow<ArtistListUiState> = _searchQuery
-        .debounce(300L)
-        .distinctUntilChanged()
-        .flatMapLatest { query ->
-            if (query.isBlank()) {
-                repository.observeAll()
-            } else {
-                repository.search(query.trim())
-            }
-        }
-        .map { artistList ->
+        .map { query ->
             ArtistListUiState(
+                searchQuery = query,
+                isLoading = true
+            )
+        }
+        .combine(
+            _searchQuery
+                .debounce(300L)
+                .distinctUntilChanged()
+                .flatMapLatest { query ->
+                    if (query.isBlank()) {
+                        repository.observeAll()
+                    } else {
+                        repository.search(query.trim())
+                    }
+                }
+        ) { uiState, artistList ->
+            uiState.copy(
                 artists = artistList,
-                searchQuery = _searchQuery.value
+                isLoading = false
             )
         }
         .stateIn(

@@ -21,11 +21,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
-fun isArtistInputValid(name: String, genre: String, yearString: String): Boolean {
-    val year = yearString.toIntOrNull() ?: return false
-    return name.isNotBlank() && genre.isNotBlank() && year in 1800..2026
-}
-
 class FakeArtistRepository : ArtistRepository {
     private val _artists = MutableStateFlow<List<Artist>>(emptyList())
 
@@ -65,6 +60,10 @@ class ArtistViewModelTest {
         repository = FakeArtistRepository()
         viewModel = ArtistViewModel(repository)
     }
+    private fun isArtistInputValid(name: String, genre: String, yearStr: String): Boolean {
+        val year = yearStr.toIntOrNull() ?: return false
+        return name.isNotBlank() && genre.isNotBlank() && year in 1900..2026
+    }
 
     @After
     fun tearDown() {
@@ -76,6 +75,7 @@ class ArtistViewModelTest {
         val name = "Drake"
         val genre = "Hip-Hop"
         var yearInput = "-50"
+
 
         assertFalse(
             "Add button should be disabled when year is out of range",

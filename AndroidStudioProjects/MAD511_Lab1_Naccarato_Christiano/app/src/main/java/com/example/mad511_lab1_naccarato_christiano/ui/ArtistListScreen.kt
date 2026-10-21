@@ -27,7 +27,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,6 +47,14 @@ fun ArtistListScreen(
     onArtistClick: (Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    var searchQueryText by remember { mutableStateOf(uiState.searchQuery) }
+
+    LaunchedEffect(uiState.searchQuery) {
+        if (searchQueryText != uiState.searchQuery) {
+            searchQueryText = uiState.searchQuery
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -60,8 +72,11 @@ fun ArtistListScreen(
                 .padding(innerPadding)
         ) {
             OutlinedTextField(
-                value = uiState.searchQuery,
-                onValueChange = viewModel::onQueryChange,
+                value = searchQueryText,
+                onValueChange = { newValue ->
+                    searchQueryText = newValue
+                    viewModel.onQueryChange(newValue)
+                },
                 label = { Text("Search Artists") },
                 singleLine = true,
                 modifier = Modifier
@@ -75,7 +90,7 @@ fun ArtistListScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = if (!uiState.isSearching) "No artists added yet" else "No matching artists found",
+                        text = if (searchQueryText.isBlank()) "No artists added yet" else "No matching artists found",
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }

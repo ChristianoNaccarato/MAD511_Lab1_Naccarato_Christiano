@@ -9,8 +9,8 @@ data class ArtistEntity(
     val name: String,
     val genre: String,
     val yearFormed: Int,
-    val addedAt: Long = System.currentTimeMillis(),
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+    val addedAt: Long = System.currentTimeMillis()
 )
 
 fun ArtistEntity.toDomain(): Artist {
@@ -19,7 +19,8 @@ fun ArtistEntity.toDomain(): Artist {
         name = this.name,
         genre = this.genre,
         yearFormed = this.yearFormed,
-        isFavorite = this.isFavorite
+        isFavorite = this.isFavorite,
+        addedAt = this.addedAt
     )
 }
 
@@ -29,6 +30,7 @@ fun Artist.toEntity(): ArtistEntity {
         name = this.name,
         genre = this.genre,
         yearFormed = this.yearFormed,
-        isFavorite = this.isFavorite
+        isFavorite = this.isFavorite,
+        addedAt = this.addedAt
     )
 }

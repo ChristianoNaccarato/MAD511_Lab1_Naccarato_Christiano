@@ -28,7 +28,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.mad511_lab1_naccarato_christiano.data.Artist
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
+fun formatTimestamp(timestamp: Long): String {
+    val formatter = SimpleDateFormat("MMM dd, yyyy 'at' h:mm a", Locale.getDefault())
+    return formatter.format(Date(timestamp))
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArtistDetailScreen(
@@ -109,6 +116,14 @@ fun ArtistDetailScreen(
                             text = "Year Formed: ${artist.yearFormed}",
                             style = MaterialTheme.typography.bodyLarge
                         )
+
+                        if (artist.addedAt > 0L) {
+                            Text(
+                                text = "Added on: ${formatTimestamp(artist.addedAt)}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                 }
 
