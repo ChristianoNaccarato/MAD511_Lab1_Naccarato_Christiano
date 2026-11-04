@@ -7,21 +7,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.saveable.listSaver
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
-import androidx.compose.ui.Modifier
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.ui.NavDisplay
+import androidx.compose.ui.Modifier
 import com.example.mad511_lab1_naccarato_christiano.ui.AddArtistScreen
 import com.example.mad511_lab1_naccarato_christiano.ui.ArtistDetailRoute
 import com.example.mad511_lab1_naccarato_christiano.ui.ArtistDetailViewModel
-import com.example.mad511_lab1_naccarato_christiano.ui.ArtistListScreen
 import com.example.mad511_lab1_naccarato_christiano.ui.ArtistViewModel
-import com.example.mad511_lab1_naccarato_christiano.ui.ArtistViewModelFactory
+import com.example.mad511_lab1_naccarato_christiano.ui.ArtistRoute
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -31,70 +29,56 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val mainViewModel: ArtistViewModel = viewModel(factory = ArtistViewModelFactory.Factory)
-
             MaterialTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val navBackStack = rememberSaveable(
-                        saver = listSaver(
-                            save = { it.toList() },
-                            restore = { it.toMutableStateList() }
-                        )
-                    ) {
-                        mutableStateListOf("list")
-                    }
+                    val backStack = rememberNavBackStack(SetListKey.ArtistList)
 
-                    var selectedArtistId by rememberSaveable { mutableIntStateOf(-1) }
-
-                    when (navBackStack.lastOrNull() ?: "list") {
-                        "list" -> ArtistListScreen(
-                            viewModel = mainViewModel,
-                            onNavigateToAdd = { navBackStack.add("add") },
-                            onArtistClick = { id ->
-                                selectedArtistId = id
-                                navBackStack.add("detail")
+                    NavDisplay(
+                        backStack = backStack,
+                        onBack = { backStack.removeLastOrNull() },
+                        entryDecorators = listOf(
+                            rememberSaveableStateHolderNavEntryDecorator(),
+                            rememberViewModelStoreNavEntryDecorator()
+                        ),
+                        entryProvider = entryProvider {
+                            entry<SetListKey.ArtistList> {
+                                ArtistRoute(
+                                    onNavigateToAdd = { backStack.add(SetListKey.AddArtist) },
+                                    onArtistClick = { id -> backStack.add(SetListKey.ArtistDetail(id)) }
+                                )
                             }
-                        )
 
-                        "add" -> AddArtistScreen(
-                            viewModel = mainViewModel,
-                            onNavigateBack = {
-                                if (navBackStack.size > 1) {
-                                    navBackStack.removeAt(navBackStack.lastIndex)
-                                }
+                            entry<SetListKey.AddArtist> {
+                                val vm: ArtistViewModel = hiltViewModel()
+                                AddArtistScreen(
+                                    viewModel = vm,
+                                    onNavigateBack = { backStack.removeLastOrNull() }
+                                )
                             }
-                        )
 
-                        "detail" -> {
-                            val detailViewModel: ArtistDetailViewModel = viewModel(
-                                key = selectedArtistId.toString(),
-                                factory = ArtistDetailViewModel.Factory(selectedArtistId)
-                            )
+                            entry<SetListKey.ArtistDetail> { key ->
+                                val detailVm =
+                                    hiltViewModel<ArtistDetailViewModel, ArtistDetailViewModel.Factory>(
+                                        creationCallback = { factory -> factory.create(key.artistId) }
+                                    )
+                                val listVm: ArtistViewModel = hiltViewModel()
+                                val uiState by listVm.uiState.collectAsStateWithLifecycle()
 
-                            val uiState by mainViewModel.uiState.collectAsStateWithLifecycle()
-
-                            ArtistDetailRoute(
-                                viewModel = detailViewModel,
-                                onBack = {
-                                    if (navBackStack.size > 1) {
-                                        navBackStack.removeAt(navBackStack.lastIndex)
+                                ArtistDetailRoute(
+                                    viewModel = detailVm,
+                                    onBack = { backStack.removeLastOrNull() },
+                                    onDeleteClick = { id ->
+                                        uiState.artists.find { it.id == id }
+                                            ?.let { listVm.deleteArtist(it) }
+                                        backStack.removeLastOrNull()
                                     }
-                                },
-                                onDeleteClick = { id ->
-                                    val artistToDelete = uiState.artists.find { it.id == id }
-                                    if (artistToDelete != null) {
-                                        mainViewModel.deleteArtist(artistToDelete)
-                                    }
-                                    if (navBackStack.size > 1) {
-                                        navBackStack.removeAt(navBackStack.lastIndex)
-                                    }
-                                }
-                            )
+                                )
+                            }
                         }
-                    }
+                    )
                 }
             }
         }

@@ -1,13 +1,13 @@
 package com.example.mad511_lab1_naccarato_christiano.ui
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
 fun ArtistRoute(
     onNavigateToAdd: () -> Unit,
     onArtistClick: (Int) -> Unit,
-    viewModel: ArtistViewModel = viewModel(factory = ArtistViewModelFactory.Factory)
+    viewModel: ArtistViewModel = hiltViewModel()
 ) {
     ArtistListScreen(
         viewModel = viewModel,

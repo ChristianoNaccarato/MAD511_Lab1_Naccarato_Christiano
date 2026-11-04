@@ -1,9 +1,7 @@
 package com.example.mad511_lab1_naccarato_christiano
 
+import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
-
-@Serializable
-sealed interface NavKey
 
 sealed interface SetListKey : NavKey {
     @Serializable
