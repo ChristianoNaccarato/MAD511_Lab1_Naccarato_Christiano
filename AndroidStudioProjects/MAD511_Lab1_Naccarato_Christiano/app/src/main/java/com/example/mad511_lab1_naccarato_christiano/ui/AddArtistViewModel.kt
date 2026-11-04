@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 data class AddArtistUiState(
     val name: String = "",
@@ -16,7 +18,8 @@ data class AddArtistUiState(
     val isValid: Boolean = false
 )
 
-class AddArtistViewModel : ViewModel() {
+@HiltViewModel
+class AddArtistViewModel @Inject constructor() : ViewModel() {
     private val _uiState = MutableStateFlow(AddArtistUiState())
     val uiState: StateFlow<AddArtistUiState> = _uiState.asStateFlow()
 
