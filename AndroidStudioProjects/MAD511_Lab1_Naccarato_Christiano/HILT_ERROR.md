@@ -1,0 +1,2 @@
+error: [Dagger/MissingBinding] com.example.mad511_lab1_naccarato_christiano.data.ArtistRepository cannot be provided without an @Provides-annotated method. 
+Dagger is missing the binding and to fix it restore the binding module.
