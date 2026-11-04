@@ -2,8 +2,10 @@ package com.example.mad511_lab1_naccarato_christiano.data
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class RoomArtistRepository(
+
+class RoomArtistRepository @Inject constructor(
     private val artistDao: ArtistDao
 ) : ArtistRepository {
 
