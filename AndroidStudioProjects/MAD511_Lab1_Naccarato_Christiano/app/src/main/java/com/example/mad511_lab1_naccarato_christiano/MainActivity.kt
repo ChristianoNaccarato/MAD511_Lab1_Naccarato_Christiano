@@ -22,7 +22,9 @@ import com.example.mad511_lab1_naccarato_christiano.ui.ArtistDetailViewModel
 import com.example.mad511_lab1_naccarato_christiano.ui.ArtistListScreen
 import com.example.mad511_lab1_naccarato_christiano.ui.ArtistViewModel
 import com.example.mad511_lab1_naccarato_christiano.ui.ArtistViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
