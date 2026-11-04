@@ -30,7 +30,11 @@ fun AddArtistScreen(
     var genreInput by rememberSaveable { mutableStateOf("") }
     var yearInput by rememberSaveable { mutableStateOf("") }
 
-    val isFormValid = nameInput.isNotBlank() && genreInput.isNotBlank() && yearInput.toIntOrNull() != null
+    val yearInt = yearInput.toIntOrNull()
+    val isFormValid = nameInput.isNotBlank() &&
+            genreInput.isNotBlank() &&
+            yearInt != null &&
+            yearInt in 1900..2026
 
     Scaffold(
         topBar = { TopAppBar(title = { Text("Add New Artist") }) }
