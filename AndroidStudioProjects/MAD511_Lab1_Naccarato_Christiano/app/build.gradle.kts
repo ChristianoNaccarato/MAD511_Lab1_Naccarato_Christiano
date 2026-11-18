@@ -64,6 +64,7 @@ dependencies {
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.kotlinx.serialization.core)
+    implementation(libs.kotlinx.serialization.json)
     // the runtime is what the app calls, the compiler only runs at build time to generate the DAO
     // and database classes, and the bundled driver ships its own SQLite so every device runs the
     // same version instead of whatever the phone happens to have
@@ -75,6 +76,9 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.viewmodel.compose)
+    implementation(libs.androidx.work.runtime)
+    implementation(libs.androidx.hilt.work)
+    ksp(libs.androidx.hilt.compiler)
     testImplementation(libs.junit)
     // runTest and StandardTestDispatcher, so a ViewModel that launches coroutines can be driven
     // from a plain JVM test with no emulator involved
@@ -85,6 +89,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.androidx.work.testing)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
