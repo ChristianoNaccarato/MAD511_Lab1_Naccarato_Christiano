@@ -38,6 +38,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.mad511_lab1_naccarato_christiano.data.Artist
+import androidx.compose.material3.TextButton
+import com.example.mad511_lab1_naccarato_christiano.work.BackupStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,7 +60,17 @@ fun ArtistListScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Artist Collection") })
+            TopAppBar(
+                title = { Text("Artist Collection") },
+                actions = {
+                    TextButton(
+                        onClick = { viewModel.backupNow() },
+                        enabled = uiState.backupStatus != BackupStatus.Running
+                    ) {
+                        Text("Backup now")
+                    }
+                }
+            )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onNavigateToAdd) {
@@ -83,7 +95,11 @@ fun ArtistListScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             )
-
+            Text(
+                text = backupStatusText(uiState.backupStatus),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+            )
             if (uiState.artists.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -114,6 +130,14 @@ fun ArtistListScreen(
             }
         }
     }
+}
+
+private fun backupStatusText(status: BackupStatus): String = when (status) {
+    BackupStatus.NothingRun -> "No backup yet"
+    BackupStatus.Running -> "Backing up"
+    is BackupStatus.Finished ->
+        "Last backup: ${status.artistCount} ${if (status.artistCount == 1) "artist" else "artists"}"
+    BackupStatus.Failed -> "Backup failed"
 }
 
 @Composable

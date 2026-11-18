@@ -3,6 +3,8 @@ package com.example.mad511_lab1_naccarato_christiano
 import com.example.mad511_lab1_naccarato_christiano.data.Artist
 import com.example.mad511_lab1_naccarato_christiano.data.ArtistRepository
 import com.example.mad511_lab1_naccarato_christiano.ui.ArtistViewModel
+import com.example.mad511_lab1_naccarato_christiano.work.BackupActions
+import com.example.mad511_lab1_naccarato_christiano.work.BackupStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -47,6 +49,11 @@ class FakeArtistRepository : ArtistRepository {
     }
 }
 
+class FakeBackupActions : BackupActions {
+    override fun backupNow() {}
+    override fun status(): Flow<BackupStatus> = MutableStateFlow(BackupStatus.NothingRun)
+}
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class ArtistViewModelTest {
 
@@ -58,7 +65,7 @@ class ArtistViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         repository = FakeArtistRepository()
-        viewModel = ArtistViewModel(repository)
+        viewModel = ArtistViewModel(repository, FakeBackupActions())
     }
     private fun isArtistInputValid(name: String, genre: String, yearStr: String): Boolean {
         val year = yearStr.toIntOrNull() ?: return false

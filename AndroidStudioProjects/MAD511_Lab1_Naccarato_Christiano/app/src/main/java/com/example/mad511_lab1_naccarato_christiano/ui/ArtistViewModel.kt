@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mad511_lab1_naccarato_christiano.data.Artist
 import com.example.mad511_lab1_naccarato_christiano.data.ArtistRepository
+import com.example.mad511_lab1_naccarato_christiano.work.BackupActions
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 @OptIn(ExperimentalCoroutinesApi::class)
 class ArtistViewModel @Inject constructor(
-    private val repository: ArtistRepository
+    private val repository: ArtistRepository,
+    private val backup: BackupActions
 ) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
@@ -50,6 +52,9 @@ class ArtistViewModel @Inject constructor(
                 isLoading = false
             )
         }
+        .combine(backup.status()) { uiState, status ->
+            uiState.copy(backupStatus = status)
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -58,6 +63,10 @@ class ArtistViewModel @Inject constructor(
 
     fun onQueryChange(newQuery: String) {
         _searchQuery.value = newQuery
+    }
+
+    fun backupNow() {
+        backup.backupNow()
     }
 
     fun addArtist(artist: Artist) {
